@@ -34,9 +34,9 @@ class Diff_heap(object):
     """ 所有的 diff 构成的集合 """
 
     def __init__(self):
-        self.index = []
-        self.index_dict = {}
-        self.data = {}
+        self.index = []  # [0,1,2,3,4,5] 所有weight-length的集合
+        self.index_dict = {}  # 快速判断某个diff是否属于diff_heap,其实和下面的重复了
+        self.data = {}  # diff 以 diff.diff 为Key, self为value的dict
         pass
 
     def insert(self, diff):
@@ -58,3 +58,13 @@ for i in range(line_number):
     else:
         diff_heap.data[job.diff].insert(job)
 
+duration = 0  # 随着job的完成，这个duration会一直增加
+cost = 0
+while diff_heap.index:
+    diff_number = heapq.heappop(diff_heap.index)
+    diff = diff_heap.data[diff_number]
+    while diff.data:
+        weight = heapq.heappop(diff.data)
+        duration += -weight - diff_number
+        cost += -weight*duration
+print(cost)
