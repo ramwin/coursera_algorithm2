@@ -19,7 +19,6 @@ class Node(object):
 
 
 class Edge(object):
-
     def __init__(self, node1, node2, cost):
         self.node1 = node1
         self.node2 = node2
@@ -33,59 +32,42 @@ class Edge(object):
 
 file_obj = open(file_path, 'r')
 node_cnt, edge_cnt = map(int, file_obj.readline().strip().split())
-nodes = []
+node_dict = {}  # 所有的node
+
 for i in range(1, 1+node_cnt):
-    node = Node(i)
-    nodes.append(node)
+    node_dict[i] = Node(i)
 
-min_edge = None
-for i in range(edge_cnt):
-    node1_number, node2_number, cost = map(int, file_obj.readline().strip().split())
-    node1 = nodes[node1_number-1]
-    node2 = nodes[node2_number-1]
-    edge = Edge(node1, node2, cost)
-    if not min_edge:
-        min_edge = edge
-    else:
-        if edge.cost < min_edge.cost:
-            min_edge = edge
-    node1.edges.append(edge)
-    node2.edges.append(edge)
+X_dict = {}
+edges = []
 
-X = {}  # 已经处理过的节点
-cost_total = 0
-X[min_edge.node1.number] = True
-X[min_edge.node2.number] = True
-cost_total += min_edge.cost
-cross_edges = []
-for edge in min_edge.node1.edges:
-    has_node1 = edge.node1.number in X
-    has_node2 = edge.node2.number in X
-    if has_node1 != has_node2:
-        cross_edges.append(edge)
+for _ in range(edge_cnt):
+    edge = Edge.create_from_line(file_obj.readline())
+    edges.append(edge)
+    node_dict[edge.node1].edges.append(edge)
+    node_dict[edge.node2].edges.append(edge)
 
-for i in range(node_cnt - 2):
-    min_edge = None
-    for edge in cross_edges:
-        if not min_edge:
-            min_edge = edge
-        else:
-            if min_edge.cost > edge.cost:
+def get_min_edge():
+    if not X_dict:
+        min_edge = edges[0]
+        for edge in edges:
+            if edge.cost < min_edge.cost:
                 min_edge = edge
-    X[min_edge.node1.number] = True
-    X[min_edge.node2.number] = True
-    cross_edges += min_edge.node1.edges
-    cross_edges += min_edge.node2.edges
-    cost_total += min_edge.cost
-    index = 0
-    for edge in cross_edges:
-        has_node1 = edge.node1.number in X
-        has_node2 = edge.node1.number in X
-        if has_node1 and has_node2:
-            cross_edges.pop(index)
-        else:
-            pass
-        index += 1    
-    print(X)
-print(X)
-print(cost_total)
+    elif X_dict:
+        min_edge = None
+        for edge in edges:
+            if (edge.node1 in X_dict) != (edge.node2 in X_dict):
+                if min_edge is None:
+                    min_edge = edge
+                else:
+                    if edge.cost < min_edge.cost:
+                        min_edge = edge
+    return min_edge
+
+
+total_cost = 0
+for i in range(node_cnt - 1):
+    min_edge = get_min_edge()
+    total_cost += min_edge.cost
+    X_dict[min_edge.node1] = True
+    X_dict[min_edge.node2] = True
+print(total_cost)
