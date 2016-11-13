@@ -44,6 +44,7 @@ class Clustering(object):
 
     def __init__(self):
         self.input = open('data/clustering1.txt', 'r')
+        # self.input = open('data/test.txt', 'r')
         self.node_cnt = int(self.input.readline())
         self.nodes = []
         self.edges = []
@@ -76,7 +77,7 @@ class Clustering(object):
                 edge.node2.ancestor.parent = edge.node1.ancestor
             else:
                 edge.node1.ancestor.parent = edge.node2.ancestor
-        self.block -= 1
+            self.block -= 1
 
     def get_space(self):
         """ 获取当前最靠近的block的距离 """
