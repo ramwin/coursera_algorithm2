@@ -36,8 +36,8 @@ class Node(object):
 class Clustering(object):
 
     def __init__(self):
-        # self.input = open("data/test.txt", "r")
         self.input = open("data/clustering_big.txt", "r")
+        # self.input = open("data/test.txt", "r")
         self.node_cnt, self.node_length = map(int, self.input.readline().split(" "))
         self.node_set = set()  # 用来存储是否出现过节点
         self.nodes = {}
@@ -77,7 +77,7 @@ class Clustering(object):
                                 node.ancestor.depth += 1
                 for j in range(i+1, self.node_length):
                     close_node_2 = close_node[0:j] + \
-                        ("1" if close_node[j] == "0" else "1") + \
+                        ("1" if close_node[j] == "0" else "0") + \
                         close_node[j+1:self.node_length]
                     if close_node_2 in self.node_set:
                         new_group = False
